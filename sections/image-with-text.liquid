@@ -36,7 +36,28 @@
             {% endif %}
           >
             {% if section.settings.media_type == 'video' and section.settings.video != blank %}
-              {{ section.settings.video | video_tag: autoplay: true, loop: true, muted: true, controls: true }}
+              {% comment %}
+                {{ section.settings.video | video_tag: autoplay: true, loop: true, muted: true, controls: true }}
+              {% endcomment %}
+              {% assign mp4_source = section.settings.video.sources | where: 'format', 'mp4' | first %}
+              {% assign fallback_source = section.settings.video.sources.first %} {# Use first available format if MP4
+              is not found #}
+
+              {% assign selected_source = mp4_source | default: fallback_source %}
+
+              {% if selected_source %}
+                <video
+                  class="lazy-video"
+                  data-src="{{ selected_source.url }}"
+                  autoplay
+                  loop
+                  muted
+                  controls
+                  playsinline
+                >
+                  <source src="" type="{{ selected_source.mime_type }}">
+                </video>
+              {% endif %}
             {% else -%}
               {%- if section.settings.image_behavior == 'ambient' or section.settings.image_behavior == 'zoom-in' -%}
                 {%- assign widths = '198, 432, 642, 900, 1284, 1800' -%}
