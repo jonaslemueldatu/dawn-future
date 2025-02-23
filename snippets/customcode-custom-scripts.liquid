@@ -1,0 +1,26 @@
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const videos = document.querySelectorAll('video.lazy-video');
+
+    if ('IntersectionObserver' in window) {
+      let observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            let video = entry.target;
+            let src = video.getAttribute('data-src');
+
+            if (src) {
+              let source = video.querySelector('source');
+              source.setAttribute('src', src);
+              video.load();
+            }
+
+            observer.unobserve(video);
+          }
+        });
+      });
+
+      videos.forEach((video) => observer.observe(video));
+    }
+  });
+</script>
